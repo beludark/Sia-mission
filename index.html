@@ -435,15 +435,18 @@
 
     /* Map */
     .map-box {
-      height: 260px;
+      /* Le ratio 2/1 garantit que la carte ne sera jamais rognée et que les % seront exacts */
+      aspect-ratio: 2 / 1;
+      width: 100%;
       border-radius: 22px;
       border: 1px solid rgba(125,249,255,0.2);
       background:
-        radial-gradient(circle at 50.7% 48%, rgba(125,249,255,0.95) 0 5px, transparent 6px),
-        radial-gradient(circle at 85.3% 41%, rgba(255,122,217,0.95) 0 5px, transparent 6px),
+        /* Points lumineux mis à jour avec les coordonnées exactes */
+        radial-gradient(circle at 50.65% 22.86%, rgba(125,249,255,0.95) 0 5px, transparent 6px),
+        radial-gradient(circle at 85.27% 29.13%, rgba(255,122,217,0.95) 0 5px, transparent 6px),
         linear-gradient(135deg, rgba(125,249,255,0.06), rgba(155,125,255,0.06)),
         url("https://upload.wikimedia.org/wikipedia/commons/8/83/Equirectangular_projection_SW.jpg");
-      background-size: cover;
+      background-size: 100% 100%;
       background-position: center;
       position: relative;
       overflow: hidden;
@@ -452,16 +455,14 @@
 
     .route {
       position: absolute;
-      /* Paris is at ~50.7% x, ~48% y ; Seoul at ~85.3% x, ~41% y
-         We draw from Paris label to Seoul label with slight arc via CSS transform */
-      left: 50.7%;
-      top: 48%;
-      /* width = horizontal distance between the two points */
-      width: 34.6%;
+      left: 50.65%;
+      top: 22.86%;
+      /* Calcul du théorème de Pythagore adapté au ratio 2:1 pour la longueur exacte de la ligne */
+      width: 34.76%;
       height: 2px;
       background: linear-gradient(90deg, var(--cyan), var(--pink));
-      /* angle: atan2((41-48)%, 34.6%) ≈ -11.4deg */
-      transform: rotate(-11.4deg);
+      /* Nouvel angle calculé pour joindre les deux nouveaux points */
+      transform: rotate(5.18deg);
       transform-origin: left center;
       box-shadow: 0 0 12px var(--pink);
     }
@@ -469,17 +470,18 @@
     .route::after {
       content: "✦";
       position: absolute;
-      right: 0;
+      left: 0;
       top: -13px;
       color: #fff;
       font-size: 0.9rem;
       animation: travel 2.8s ease-in-out infinite;
     }
 
+    /* Animation modifiée pour utiliser left plutôt que transform, parfait pour les tailles dynamiques */
     @keyframes travel {
-      0%   { transform: translateX(-160px); opacity: 0; }
+      0%   { left: 0%; opacity: 0; }
       15%  { opacity: 1; }
-      100% { transform: translateX(0);      opacity: 1; }
+      100% { left: 100%; opacity: 1; }
     }
 
     .place {
@@ -494,14 +496,22 @@
       z-index: 2;
     }
 
-    /* Paris: lon=2.35°E → x=(2.35+180)/360=50.7%, lat=48.85°N → y=(90-48.85)/180=22.9% of image
-       The Wikipedia map image is centered, displayed at cover in 260px height.
-       Approximate screen positions after cover scaling: */
-    .paris { left: 49%; top: 52%; transform: translateX(-50%); }
+    /* 
+       Paris: lon=2.35°E → x=50.65%, lat=48.85°N → y=22.86% 
+       Seoul: lon=126.98°E → x=85.27%, lat=37.57°N → y=29.13%
+       Le translate(-50%, calc(-100% - 8px)) centre le texte et le place juste au-dessus du point lumineux
+    */
+    .paris { 
+      left: 50.65%; 
+      top: 22.86%; 
+      transform: translate(-50%, calc(-100% - 8px)); 
+    }
 
-    /* Seoul: lon=126.98°E → x=(126.98+180)/360=85.3%, lat=37.57°N → y=(90-37.57)/180=29.1% */
-    .seoul { left: 83%; top: 44%; transform: translateX(-50%); }
-
+    .seoul { 
+      left: 85.27%; 
+      top: 29.13%; 
+      transform: translate(-50%, calc(-100% - 8px)); 
+    }
     /* Countdown */
     .countdown {
       display: grid;
